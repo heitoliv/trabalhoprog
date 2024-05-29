@@ -1,0 +1,58 @@
+import pickle
+
+with open('usuarios.bin', 'rb') as arq:
+    dic = pickle.load(arq)
+    l_login = []
+    l_Seguindo = []
+    l_Seguidores = []
+    for chave in dic:
+        nome = dic[chave][0]
+        qtdSeguindo = len(dic[chave][1]) 
+        qtdSeguidores = len(dic[chave][2])
+        dadosFoto = dic[chave][3][0]
+        l_login.append(chave)
+        l_Seguindo.append(qtdSeguindo)
+        l_Seguidores.append(qtdSeguidores)
+    print(l_Seguindo)
+    print(l_Seguidores)
+
+
+
+def merge(l, lEsq, lDir):
+    i = 0
+    j = 0
+    k = 0
+    while i < len(lEsq) and j < len(lDir):
+        if lEsq[i] < lDir[j]:
+            l[k] = lEsq[i]
+            i += 1
+        else:
+            l[k] = lDir[j]
+            j += 1
+        k += 1
+
+    while i < len(lEsq):
+        l[k] = lEsq[i]
+        i += 1
+        k += 1
+
+    while j < len(lDir):
+        l[k] = lDir[j]
+        j += 1
+        k += 1
+
+def mergeSort(l):
+    if len(l) > 1:
+        meio = len(l) // 2
+        lEsq = l[:meio]
+        lDir = l[meio:]
+
+        mergeSort(lEsq)
+        mergeSort(lDir)
+
+        merge(l, lEsq, lDir)
+        
+Ord_Seguindo = mergeSort(l_Seguindo)
+Ord_Seguidores = mergeSort(l_Seguidores)
+print(Ord_Seguindo)
+print(Ord_Seguidores)
