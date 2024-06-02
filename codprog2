@@ -16,7 +16,10 @@ def criteriosMaior(dic, i, j):
     #dados em relação aos nome ao critério de desempate - ordem alfabetica (terceiro critério)
     nome_posI = dic[i][0]
     nome_posJ = dic[j][0]
-
+    # print(i,j)
+    # print(seguidores_posI, seguidores_posJ)
+    # print(seguidores_posJ, seguindo_posJ)
+    # print(nome_posI, nome_posJ)
     #primeiro critério
     if seguidores_posI > seguidores_posJ:
         return True
@@ -34,10 +37,10 @@ def criteriosMaior(dic, i, j):
         return True
     if nome_posI > nome_posJ:
         return False 
-    return i < j #????
+    return i < j 
 
 #função auxiliar para a implementação do algoritmo do merge sort
-def merge(dic, l, lEsq, lDir):
+def merge(l, lEsq, lDir):
     i = 0
     j = 0
     k = 0
@@ -61,7 +64,7 @@ def merge(dic, l, lEsq, lDir):
         k += 1
 
 #algoritmo de ordenação merge sort
-def mergeSort(dic, l):
+def mergeSort(l):
     if len(l) > 1:
         meio = len(l) // 2
         lEsq = l[:meio]
@@ -70,20 +73,25 @@ def mergeSort(dic, l):
         mergeSort(lEsq)
         mergeSort(lDir)
 
-        merge(dic, l, lEsq, lDir)
+        merge(l, lEsq, lDir)
+    return l
 
 #criação e ordenação da lista de logins
 def Lista_logins(dic):
     l_login = []
     for chave in dic:
         l_login.append(chave)
-    listaOrdenada = mergeSort(dic, l_login)
+    listaOrdenada = mergeSort(l_login)
     return listaOrdenada
 
-def formatPrint(dic, listaOrdenada):
-    for login in listaOrdenada:
+def formatPrint(dic, l):
+    for login in l:
         nome = dic[login][0]
-        num_Seguindo = dic[login][1]
-        num_Seguidores = dic[login][2]
+        num_Seguindo = len(dic[login][1])
+        num_Seguidores = len(dic[login][2])
         print(f'{nome} (segue {num_Seguindo}, seguido por {num_Seguidores})')
 
+def main():
+    lista = Lista_logins(dic)
+    formatPrint(dic, lista)
+main()
