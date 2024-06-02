@@ -3,25 +3,19 @@ import pickle
 with open('usuarios.bin', 'rb') as arq:
     dic = pickle.load(arq)
 
-def criaLista_logins(dic):
-    l_login = []
-    for chave in dic:
-        l_login.append(chave)
-    return l_login
-
-
-def criteriosMaior(pos_i,pos_j,dic):
+# comparação de cada logins e os criterios estabelecidos
+def criteriosMaior(dic, i, j):
     #quantidade de seguidores de cada usuário (primeiro critério)
-    seguidores_posI = len(dic[pos_i][2])
-    seguidores_posJ = len(dic[pos_j][2])
+    seguidores_posI = len(dic[i][2])
+    seguidores_posJ = len(dic[j][2])
 
     #quantidade de seguindo de cada usuário (segundo critério)
-    seguindo_posI = len(dic[pos_i][1])
-    seguindo_posJ = len(dic[pos_j][1])
+    seguindo_posI = len(dic[i][1])
+    seguindo_posJ = len(dic[j][1])
 
     #dados em relação aos nome ao critério de desempate - ordem alfabetica (terceiro critério)
-    nome_posI = dic[pos_i][0]
-    nome_posJ = dic[pos_j][0]
+    nome_posI = dic[i][0]
+    nome_posJ = dic[j][0]
 
     #primeiro critério
     if seguidores_posI > seguidores_posJ:
@@ -36,49 +30,53 @@ def criteriosMaior(pos_i,pos_j,dic):
         return False
     
     #terceiro critério
-    if nome_posI > nome_posJ:
-        return True
     if nome_posI < nome_posJ:
-        return False
-    return pos_j < pos_i
+        return True
+    if nome_posI > nome_posJ:
+        return False 
+    return i < j #????
 
-
-
-def merge(dic, l_login, lEsq, lDir):
+#função auxiliar para a implementação do algoritmo do merge sort
+def merge(dic, l, lEsq, lDir):
     i = 0
     j = 0
     k = 0
     while i < len(lEsq) and j < len(lDir):
-        if criteriosMaior(lEsq[i],lDir[j],dic):
-            l_login[k] = lEsq[i]
+        if criteriosMaior(dic,lEsq[i],lDir[j]):
+            l[k] = lEsq[i]
             i += 1
         else:
-            l_login[k] = lDir[j]
+            l[k] = lDir[j]
             j += 1
         k += 1
 
     while i < len(lEsq):
-        l_login[k] = lEsq[i]
+        l[k] = lEsq[i]
         i += 1
         k += 1
 
     while j < len(lDir):
-        l_login[k] = lDir[j]
+        l[k] = lDir[j]
         j += 1
         k += 1
 
-def mergeSort(dic, l_login):
-    if len(l_login) > 1:
-        meio = len(l_login) // 2
-        lEsq = l_login[:meio]
-        lDir = l_login[meio:]
+#algoritmo de ordenação merge sort
+def mergeSort(dic, l):
+    if len(l) > 1:
+        meio = len(l) // 2
+        lEsq = l[:meio]
+        lDir = l[meio:]
 
         mergeSort(lEsq)
         mergeSort(lDir)
 
-        merge(dic, l_login, lEsq, lDir)
+        merge(dic, l, lEsq, lDir)
 
-def ordenacao(dic, l_login):
+#criação e ordenação da lista de logins
+def Lista_logins(dic):
+    l_login = []
+    for chave in dic:
+        l_login.append(chave)
     listaOrdenada = mergeSort(dic, l_login)
     return listaOrdenada
 
@@ -89,4 +87,3 @@ def formatPrint(dic, listaOrdenada):
         num_Seguidores = dic[login][2]
         print(f'{nome} (segue {num_Seguindo}, seguido por {num_Seguidores})')
 
-        
