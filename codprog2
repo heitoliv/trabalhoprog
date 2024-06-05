@@ -1,5 +1,6 @@
 import pickle
 
+#leitura dos dados
 with open('usuarios.bin', 'rb') as arq:
     dic = pickle.load(arq)
 
@@ -16,10 +17,7 @@ def criteriosMaior(dic, i, j):
     #dados em relação aos nome ao critério de desempate - ordem alfabetica (terceiro critério)
     nome_posI = dic[i][0]
     nome_posJ = dic[j][0]
-    # print(i,j)
-    # print(seguidores_posI, seguidores_posJ)
-    # print(seguidores_posJ, seguindo_posJ)
-    # print(nome_posI, nome_posJ)
+    
     #primeiro critério
     if seguidores_posI > seguidores_posJ:
         return True
@@ -84,6 +82,7 @@ def Lista_logins(dic):
     listaOrdenada = mergeSort(l_login)
     return listaOrdenada
 
+#formatação de saida dos usuarios
 def formatPrint(dic, l):
     for login in l:
         nome = dic[login][0]
@@ -91,7 +90,117 @@ def formatPrint(dic, l):
         num_Seguidores = len(dic[login][2])
         print(f'{nome} (segue {num_Seguindo}, seguido por {num_Seguidores})')
 
+#criação de uma lista contendo as informações para serem utilizadas no critério de ordenação
+def criaLista_Feed(dic,l):
+    lista = []
+    for usuario in l:
+        posts = dic[usuario][3]
+        for (foto,legenda,data) in posts:
+            dia = data[0]
+            mes = data[1]
+            ano = data[2]
+            hora = data[3]
+            min = data[4]
+            lista.append((usuario,foto,legenda,dia,mes,ano,hora,min))
+    return lista
+
+    
+#criterios de comparação para fazer a ordenação do feed
+def criteriosFeed(l, i, j):
+    loginI = i[0]
+    loginJ = j[0]
+    diaI = i[3]
+    diaJ = j[3]
+    mesI = i[4]
+    mesJ = j[4]
+    anoI = i[5]
+    anoJ = j[5]
+    horaI = i[6]
+    horaJ = j[6]
+    minI = i[7]
+    minJ = j[7]
+
+    if anoI > anoJ:
+        return True
+    if anoI < anoJ:
+        return False
+    if mesI > mesJ:
+        return True
+    if mesI < mesJ:
+        return False
+    if diaI > diaJ:
+        return True
+    if diaI < diaJ:
+        return False
+    if horaI > horaJ:
+        return True
+    if horaI < horaJ:
+        return False
+    if minI > minJ:
+        return True
+    if minI < minJ:
+        return False
+    if loginI < loginJ:
+        return True
+    if loginI > loginJ:
+        return False
+    return i < j
+
+#função auxiliar para ordenar o feed 
+def mergeFeed(l, lEsq, lDir):
+    i = 0
+    j = 0
+    k = 0
+    while i < len(lEsq) and j < len(lDir):
+        if criteriosFeed(l,lEsq[i],lDir[j]):
+            l[k] = lEsq[i]
+            i += 1
+        else:
+            l[k] = lDir[j]
+            j += 1
+        k += 1
+
+    while i < len(lEsq):
+        l[k] = lEsq[i]
+        i += 1
+        k += 1
+
+    while j < len(lDir):
+        l[k] = lDir[j]
+        j += 1
+        k += 1
+
+#função responsável pela ordenação do feed
+def mergeSortFeed(l):
+    if len(l) > 1:
+        meio = len(l) // 2
+        lEsq = l[:meio]
+        lDir = l[meio:]
+
+        mergeSortFeed(lEsq)
+        mergeSortFeed(lDir)
+
+        mergeFeed(l, lEsq, lDir)
+    return l
+
+#fromatação da saída dos dados quanto ao feed do usuário
+def formatPrint_Feed(l):
+    segOrdenado = mergeSortFeed(l)
+    print('***')
+    for (login,foto,legenda,dia,mes,ano,hora,minuto) in segOrdenado:
+        print(login)
+        print(foto)
+        print(legenda)
+        print(f'{dia}/{mes}/{ano} {hora}:{minuto}')
+        print('***')
+
+#função principal
 def main():
     lista = Lista_logins(dic)
     formatPrint(dic, lista)
+    print('---')
+    print(f'Feed de {dic[lista[0]][0]}:')
+    seguindo = dic[lista[0]][1]
+    listFeed = criaLista_Feed(dic,seguindo)
+    formatPrint_Feed(listFeed)
 main()
