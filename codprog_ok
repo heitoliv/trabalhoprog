@@ -1,0 +1,229 @@
+#-----------------Alunos-----------------------#
+        #Matheus_Lima_Ribeiro
+        #Heitor Mendes de Oliveira
+#----------------------------------------------#
+import pickle
+
+#leitura dos dados
+with open('usuarios.bin', 'rb') as arq:
+    dic = pickle.load(arq)
+
+# comparação de cada logins e os criterios estabelecidos
+def criteriosMaior(dic, i, j):
+    #quantidade de seguidores de cada usuário (primeiro critério)
+    seguidores_posI = len(dic[i][2])
+    seguidores_posJ = len(dic[j][2])
+
+    #quantidade de seguindo de cada usuário (segundo critério)
+    seguindo_posI = len(dic[i][1])
+    seguindo_posJ = len(dic[j][1])
+
+    #dados em relação aos nome ao critério de desempate - ordem alfabetica (terceiro critério)
+    nome_posI = dic[i][0]
+    nome_posJ = dic[j][0]
+    
+    #primeiro critério
+    if seguidores_posI > seguidores_posJ:
+        return True
+    if seguidores_posI < seguidores_posJ:
+        return False
+    
+    #segundo critério
+    if seguindo_posI > seguindo_posJ:
+        return True
+    if seguindo_posI < seguindo_posJ:
+        return False
+    
+    #terceiro critério
+    if nome_posI < nome_posJ:
+        return True
+    if nome_posI > nome_posJ:
+        return False 
+    return i < j 
+
+#função auxiliar para a implementação do algoritmo do merge sort
+def merge(l, lEsq, lDir):
+    i = 0
+    j = 0
+    k = 0
+    while i < len(lEsq) and j < len(lDir):
+        if criteriosMaior(dic,lEsq[i],lDir[j]):
+            l[k] = lEsq[i]
+            i += 1
+        else:
+            l[k] = lDir[j]
+            j += 1
+        k += 1
+
+    while i < len(lEsq):
+        l[k] = lEsq[i]
+        i += 1
+        k += 1
+
+    while j < len(lDir):
+        l[k] = lDir[j]
+        j += 1
+        k += 1
+
+#algoritmo de ordenação merge sort
+def mergeSort(l):
+    if len(l) > 1:
+        meio = len(l) // 2
+        lEsq = l[:meio]
+        lDir = l[meio:]
+
+        mergeSort(lEsq)
+        mergeSort(lDir)
+
+        merge(l, lEsq, lDir)
+    return l
+
+#criação e ordenação da lista de logins
+def Lista_logins(dic):
+    l_login = []
+    for chave in dic:
+        l_login.append(chave)
+    listaOrdenada = mergeSort(l_login)
+    return listaOrdenada
+
+#formatação de saida dos usuarios
+def formatPrint(dic, l):
+    dados_usuario = []
+    for login in l:
+        nome = dic[login][0]
+        num_Seguindo = len(dic[login][1])
+        num_Seguidores = len(dic[login][2])
+        informaçao_usuario = f'{nome} (segue {num_Seguindo}, seguido por {num_Seguidores})'
+        print(f'{nome} (segue {num_Seguindo}, seguido por {num_Seguidores})')
+        dados_usuario.append(informaçao_usuario + '\n')
+    return dados_usuario
+
+#criação de uma lista contendo as informações para serem utilizadas no critério de ordenação
+def criaLista_Feed(dic,l):
+    lista = []
+    for usuario in l:
+        posts = dic[usuario][3]
+        for (foto,legenda,data) in posts:
+            dia = data[0]
+            mes = data[1]
+            ano = data[2]
+            hora = data[3]
+            min = data[4]
+            lista.append((usuario,foto,legenda,dia,mes,ano,hora,min))
+    return lista
+
+    
+#criterios de comparação para fazer a ordenação do feed
+def criteriosFeed(l, i, j):
+    loginI = i[0]
+    loginJ = j[0]
+    diaI = i[3]
+    diaJ = j[3]
+    mesI = i[4]
+    mesJ = j[4]
+    anoI = i[5]
+    anoJ = j[5]
+    horaI = i[6]
+    horaJ = j[6]
+    minI = i[7]
+    minJ = j[7]
+
+    if anoI > anoJ:
+        return True
+    if anoI < anoJ:
+        return False
+    if mesI > mesJ:
+        return True
+    if mesI < mesJ:
+        return False
+    if diaI > diaJ:
+        return True
+    if diaI < diaJ:
+        return False
+    if horaI > horaJ:
+        return True
+    if horaI < horaJ:
+        return False
+    if minI > minJ:
+        return True
+    if minI < minJ:
+        return False
+    if loginI < loginJ:
+        return True
+    if loginI > loginJ:
+        return False
+    return i < j
+
+#função auxiliar para ordenar o feed 
+def mergeFeed(l, lEsq, lDir):
+    i = 0
+    j = 0
+    k = 0
+    while i < len(lEsq) and j < len(lDir):
+        if criteriosFeed(l,lEsq[i],lDir[j]):
+            l[k] = lEsq[i]
+            i += 1
+        else:
+            l[k] = lDir[j]
+            j += 1
+        k += 1
+
+    while i < len(lEsq):
+        l[k] = lEsq[i]
+        i += 1
+        k += 1
+
+    while j < len(lDir):
+        l[k] = lDir[j]
+        j += 1
+        k += 1
+
+#função responsável pela ordenação do feed
+def mergeSortFeed(l):
+    if len(l) > 1:
+        meio = len(l) // 2
+        lEsq = l[:meio]
+        lDir = l[meio:]
+
+        mergeSortFeed(lEsq)
+        mergeSortFeed(lDir)
+
+        mergeFeed(l, lEsq, lDir)
+    return l
+
+#fromatação da saída dos dados quanto ao feed do usuário
+def formatPrint_Feed(l):
+    dados_feed = []
+    segOrdenado = mergeSortFeed(l)
+    print('***')
+    for (login,foto,legenda,dia,mes,ano,hora,minuto) in segOrdenado:
+        print(login)
+        print(foto)
+        print(legenda)
+        print(f'{dia:02d}/{mes:02d}/{ano} {hora:02d}:{minuto:02d}')
+        print('***')
+        dados_feed.append('***\n')
+        dados_feed.append(login + '\n')
+        dados_feed.append(foto +'\n')
+        dados_feed.append(legenda + '\n')
+        dados_feed.append(f'{dia:02d}/{mes:02d}/{ano} {hora:02d}:{minuto:02d}\n')
+    return dados_feed + ['***']
+        
+def criar_arquivo(dados_usuarios, dados_feed):
+    f = open("saida.txt", "w")
+    f.writelines(dados_usuarios)
+    f.writelines(dados_feed)
+    f.close()
+    
+#função principal
+def main():
+    dados_arquivo_saida = []
+    lista = Lista_logins(dic)
+    dados_usuarios = formatPrint(dic, lista)
+    dados_usuarios.append('---\n')
+    dados_usuarios.append(f'Feed de {dic[lista[0]][0]}:\n')
+    seguindo = dic[lista[0]][1]
+    listFeed = criaLista_Feed(dic,seguindo)
+    dados_feed = formatPrint_Feed(listFeed)
+    criar_arquivo(dados_usuarios, dados_feed)
+main()
