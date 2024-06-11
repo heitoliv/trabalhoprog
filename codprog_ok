@@ -117,14 +117,19 @@ def criaLista_Feed(dic,l):
 def criteriosFeed(l, i, j):
     loginI = i[0]
     loginJ = j[0]
+
     diaI = i[3]
     diaJ = j[3]
+
     mesI = i[4]
     mesJ = j[4]
+
     anoI = i[5]
     anoJ = j[5]
+
     horaI = i[6]
     horaJ = j[6]
+    
     minI = i[7]
     minJ = j[7]
 
@@ -217,7 +222,6 @@ def criar_arquivo(dados_usuarios, dados_feed):
     
 #função principal
 def main():
-    dados_arquivo_saida = []
     lista = Lista_logins(dic)
     dados_usuarios = formatPrint(dic, lista)
     dados_usuarios.append('---\n')
